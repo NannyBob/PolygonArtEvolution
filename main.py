@@ -1,6 +1,7 @@
 # Task Description: https://ncl.instructure.com/courses/39977/pages/task-description-for-biocomputing?module_item_id=2232026
 # Slides: http://homepages.cs.ncl.ac.uk/pawel.widera/2034/evolution/slides/art.html#/
 import os
+import shutil
 
 from evol import Population, Evolution
 import datetime
@@ -11,6 +12,7 @@ import mutate
 from copy import deepcopy
 from operator import attrgetter
 import config
+
 
 def select(population):
     chosen = []
@@ -37,6 +39,8 @@ logging = config.config["logging"]
 if logging:
     logging_folder = "img_out/full_log/" + str(datetime.datetime.now())[:19].replace(":", ".")
     os.mkdir(logging_folder)
+    shutil.copyfile(config.filepath, logging_folder + "config.json")
+
 for i in range(config.config["generations"]):
     population = population.evolve(evolution)
     print("i =", i, " best =", population.current_best.fitness,
@@ -44,10 +48,13 @@ for i in range(config.config["generations"]):
     if logging:
         if (i + 1) % logging == 0:
             image = fitness.draw(population.current_best.chromosome)
-            image.save(logging_folder + "/" + str(i) + ".png")
+            image.save(logging_folder + str(i) + ".png")
 
 image = fitness.draw(population.current_best.chromosome)
 image.save("img_out/previous best.png")
 if config.config["progress"]:
-    image.save(
-        "img_out/progress/" + str(datetime.datetime.now())[:19].replace(":", ".") + "-" + str(config.config["generations"]) + ".png")
+    progress_folder = "img_out/progress/" + str(datetime.datetime.now())[:19].replace(":", ".") + "-" + str(
+        config.config["generations"]) + "/"
+    os.mkdir(progress_folder)
+    image.save(progress_folder + "image.png")
+    shutil.copyfile(config.filepath, progress_folder + "config.json")

@@ -1,16 +1,20 @@
+import config
 import create
 import random
 
+
 def mutate(solution, rate):
-    rnd = random.random()
-    if rnd < 0.25:
-        return mutate_point_gaussian(solution,rate)
-    elif rnd < 0.5:
-        return mutate_colour_gaussian(solution)
-    elif rnd < 0.75:
-        return mutate_add_polygon(solution)
-    else:
-        return mutate_remove_polygon(solution)
+    mutation_probs = config.config["mutation"]
+    if random.random() < mutation_probs["move point"]:
+        mutate_point_gaussian(solution, rate)
+    if random.random() < mutation_probs["change colour"]:
+        mutate_colour_gaussian(solution)
+    if random.random() < mutation_probs["add polygon"]:
+        mutate_add_polygon(solution)
+    if random.random() < mutation_probs["remove polygon"]:
+        mutate_remove_polygon(solution)
+    return solution
+
 
 # Maybe mutate colour and transparency seperately
 def mutate_colour_gaussian(solution):
@@ -22,22 +26,23 @@ def mutate_colour_gaussian(solution):
 def mutate_point_gaussian(solution, indpb):
     polygon = random.choice(solution)
     for i in range(len(polygon[1:])):
-        polygon[i+1] = single_point_gaussian(polygon[i+1],indpb)
+        polygon[i + 1] = single_point_gaussian(polygon[i + 1], indpb)
     return solution
+
 
 def mutate_add_polygon(solution):
     if len(solution) < 100:
         solution.append(create.random_polygon())
     return solution
 
+
 def mutate_remove_polygon(solution):
     if len(solution) > 0:
-        solution.pop(random.randint(0,len(solution)-1))
+        solution.pop(random.randint(0, len(solution) - 1))
     return solution
 
 
-
-def single_point_gaussian(point,indpb):
+def single_point_gaussian(point, indpb):
     x = point[0]
     y = point[1]
     if random.random() < indpb:
@@ -46,7 +51,7 @@ def single_point_gaussian(point,indpb):
     if random.random() < indpb:
         y += random.gauss(0, 10)
         y = max(0, min(int(y), 200))
-    return (x,y)
+    return (x, y)
 
 
 def single_colour_gaussian(colour):
@@ -66,4 +71,4 @@ def single_colour_gaussian(colour):
     if random.random() < 0.5:
         a += random.gauss(0, 10)
         a = max(0, min(int(a), 255))
-    return (r,g,b,a)
+    return (r, g, b, a)

@@ -1,5 +1,8 @@
 import random
 
+import config
+
+
 def random_colour():
     return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
@@ -14,4 +17,4 @@ def random_polygon():
 
 
 def initialize():
-    return [random_polygon() for i in range(50)]
+    return [random_polygon() for i in range(config.config["population size"])]

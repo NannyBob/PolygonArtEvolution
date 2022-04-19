@@ -1,5 +1,6 @@
 import json
 
-with open("config.json", "r") as jsonfile:
+filepath = "config.json"
+with open(filepath, "r") as jsonfile:
     config = json.load(jsonfile)
     print("Read successful")
