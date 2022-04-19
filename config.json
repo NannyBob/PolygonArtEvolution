@@ -1,12 +1,21 @@
 {
-  "generations": 900,
+  "generations": 5000,
   "logging": 0,
-  "progress": true,
-  "population size": 50,
+  "progress": false,
+  "starting polygons": 25,
+  "max polygons": 50,
+  "min polygons": 1,
+  "max points": 6,
+  "min points": 3,
+  "survival rate": 0.5,
   "mutation": {
+    "elitist": true,
+    "mutation rate": 0.5,
     "change colour": 0.8,
     "move point": 0.8,
     "add polygon": 0.1,
-    "remove polygon": 0.1
+    "remove polygon": 0.1,
+    "add point": 0.5,
+    "remove point": 0.5
   }
 }

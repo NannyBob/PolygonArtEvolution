@@ -30,9 +30,12 @@ def combine(*parents):
 population = Population.generate(create.initialize, fitness.evaluate, size=10, maximize=True)
 population.evaluate()
 
-evolution = (Evolution().survive(fraction=0.5)
-             .breed(parent_picker=select, combiner=combine)
-             .mutate(mutate_function=mutate.mutate, rate=0.1)
+evolution = (Evolution().survive(fraction=config.config["survival rate"])
+             .breed(parent_picker=select,
+                    combiner=combine)
+             .mutate(mutate_function=mutate.mutate,
+                     rate=config.config["mutation"]["mutation rate"],
+                     elitist=config.config["mutation"]["elitist"])
              .evaluate())
 
 logging = config.config["logging"]

@@ -13,8 +13,10 @@ def random_point():
 
 def random_polygon():
     # [(R,G,B,A),p1,p2,p3]
-    return [random_colour(), random_point(), random_point(), random_point()]
+    number_of_points = random.randint(config.config["min points"], config.config["max points"])
+    points = [random_point() for i in range(number_of_points)]
+    return [random_colour(),*points]
 
 
 def initialize():
-    return [random_polygon() for i in range(config.config["population size"])]
+    return [random_polygon() for i in range(config.config["starting polygons"])]

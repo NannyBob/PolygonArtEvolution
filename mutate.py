@@ -13,6 +13,11 @@ def mutate(solution, rate):
         mutate_add_polygon(solution)
     if random.random() < mutation_probs["remove polygon"]:
         mutate_remove_polygon(solution)
+    if random.random() < mutation_probs["add point"]:
+        mutate_add_point(solution)
+    if random.random() < mutation_probs["remove point"]:
+        mutate_remove_point(solution)
+
     return solution
 
 
@@ -31,14 +36,28 @@ def mutate_point_gaussian(solution, indpb):
 
 
 def mutate_add_polygon(solution):
-    if len(solution) < 100:
+    if len(solution) < config.config["max polygons"]:
         solution.append(create.random_polygon())
     return solution
 
 
 def mutate_remove_polygon(solution):
-    if len(solution) > 0:
+    if len(solution) > config.config["min polygons"]:
         solution.pop(random.randint(0, len(solution) - 1))
+    return solution
+
+
+def mutate_add_point(solution):
+    polygon = random.choice(solution)
+    if len(solution) + 1 < config.config["max points"]:
+        solution.append(create.random_point())
+    return solution
+
+
+def mutate_remove_point(solution):
+    polygon = random.choice(solution)
+    if len(solution) + 1 < config.config["min points"]:
+        solution.pop(random.randint(config.config["min points"], len(polygon) - 1))
     return solution
 
 
