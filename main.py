@@ -1,5 +1,6 @@
 # Task Description: https://ncl.instructure.com/courses/39977/pages/task-description-for-biocomputing?module_item_id=2232026
 # Slides: http://homepages.cs.ncl.ac.uk/pawel.widera/2034/evolution/slides/art.html#/
+import os
 
 from evol import Population, Evolution
 import datetime
@@ -10,7 +11,10 @@ import mutate
 from copy import deepcopy
 from operator import attrgetter
 
-generations = 10000
+generations = 200
+logging = 2
+progress = False
+
 
 def select(population):
     chosen = []
@@ -32,12 +36,20 @@ evolution = (Evolution().survive(fraction=0.5)
              .breed(parent_picker=select, combiner=combine)
              .mutate(mutate_function=mutate.mutate, rate=0.1)
              .evaluate())
-
+if logging:
+    logging_folder = "img_out/" + str(datetime.datetime.now())[:19].replace(":", ".")
+    os.mkdir(logging_folder)
 for i in range(generations):
     population = population.evolve(evolution)
     print("i =", i, " best =", population.current_best.fitness,
           " worst =", population.current_worst.fitness)
+    if logging:
+        if (i + 1) % logging == 0:
+            image = fitness.draw(population.current_best.chromosome)
+            image.save(logging_folder + "/" + str(i) + ".png")
 
 image = fitness.draw(population.current_best.chromosome)
 image.save("img_out/previous best.png")
-image.save("progress/" + str(datetime.datetime.now().time())[:8].replace(":", ".") + "-" +str(generations)+".png")
+if progress:
+    image.save(
+        "img_out/progress/" + str(datetime.datetime.now())[:19].replace(":", ".") + "-" + str(generations) + ".png")
