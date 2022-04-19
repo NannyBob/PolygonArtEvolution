@@ -2,6 +2,7 @@
 # Slides: http://homepages.cs.ncl.ac.uk/pawel.widera/2034/evolution/slides/art.html#/
 
 from evol import Population, Evolution
+import datetime
 import random
 import create
 import fitness
@@ -9,7 +10,7 @@ import mutate
 from copy import deepcopy
 from operator import attrgetter
 
-
+generations = 10000
 
 def select(population):
     chosen = []
@@ -32,7 +33,11 @@ evolution = (Evolution().survive(fraction=0.5)
              .mutate(mutate_function=mutate.mutate, rate=0.1)
              .evaluate())
 
-for i in range(20):
+for i in range(generations):
     population = population.evolve(evolution)
     print("i =", i, " best =", population.current_best.fitness,
           " worst =", population.current_worst.fitness)
+
+image = fitness.draw(population.current_best.chromosome)
+image.save("img_out/previous best.png")
+image.save("progress/" + str(datetime.datetime.now().time())[:8].replace(":", ".") + "-" +str(generations)+".png")

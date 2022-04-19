@@ -1,6 +1,6 @@
 import random
 import main
-
+import create
 
 def remove_polygon(solution):
     if len(solution > 1):
@@ -9,7 +9,7 @@ def remove_polygon(solution):
 
 
 def add_polygon(solution):
-    solution.append(main.rand_polygon())
+    solution.append(create.random_polygon())
     return solution
 
 def add_point(solution):

@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageChops
 from math import atan
-import datetime
+
 
 TARGET = Image.open("img_in/darwin.png")
 MAX = 255 * TARGET.size[0] * TARGET.size[1]
@@ -12,8 +12,6 @@ def draw(solution):
         #points = point_order(polygon)
         points = polygon[1:]
         canvas.polygon(points,fill=polygon[0])
-    image.save("img_out/first.png")
-    image.save("progress/"+str(datetime.datetime.now().time())[:2]+".png","PNG")
     return image
 
 def evaluate(solution):
