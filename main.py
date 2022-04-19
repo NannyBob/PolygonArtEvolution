@@ -10,11 +10,7 @@ import fitness
 import mutate
 from copy import deepcopy
 from operator import attrgetter
-
-generations = 200
-logging = 2
-progress = False
-
+import config
 
 def select(population):
     chosen = []
@@ -36,10 +32,12 @@ evolution = (Evolution().survive(fraction=0.5)
              .breed(parent_picker=select, combiner=combine)
              .mutate(mutate_function=mutate.mutate, rate=0.1)
              .evaluate())
+
+logging = config.config["logging"]
 if logging:
-    logging_folder = "img_out/" + str(datetime.datetime.now())[:19].replace(":", ".")
+    logging_folder = "img_out/full_log/" + str(datetime.datetime.now())[:19].replace(":", ".")
     os.mkdir(logging_folder)
-for i in range(generations):
+for i in range(config.config["generations"]):
     population = population.evolve(evolution)
     print("i =", i, " best =", population.current_best.fitness,
           " worst =", population.current_worst.fitness)
@@ -50,6 +48,6 @@ for i in range(generations):
 
 image = fitness.draw(population.current_best.chromosome)
 image.save("img_out/previous best.png")
-if progress:
+if config.config["progress"]:
     image.save(
-        "img_out/progress/" + str(datetime.datetime.now())[:19].replace(":", ".") + "-" + str(generations) + ".png")
+        "img_out/progress/" + str(datetime.datetime.now())[:19].replace(":", ".") + "-" + str(config.config["generations"]) + ".png")
