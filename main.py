@@ -9,30 +9,22 @@ import random
 import create
 import fitness
 import mutate
-from copy import deepcopy
-from operator import attrgetter
 import config
+import select
+import breed
 
 
-def select(population):
-    chosen = []
-    for i in range(2):
-        candidates = random.sample(population, 5)
-        winner = max(candidates, key=attrgetter("fitness"))  # pick by fitness
-        chosen.append(deepcopy(winner))  # append a copy, not a reference
-    return chosen
 
 
-def combine(*parents):
-    return [a if random.random() < 0.5 else b for a, b in zip(*parents)]
 
-
-population = Population.generate(create.initialize, fitness.evaluate, size=10, maximize=True)
+population = Population.generate(create.initialize, fitness.evaluate,
+                                 size=config.config["population size"],
+                                 maximize=True)
 population.evaluate()
 
 evolution = (Evolution().survive(fraction=config.config["survival rate"])
-             .breed(parent_picker=select,
-                    combiner=combine)
+             .breed(parent_picker=select.select,
+                    combiner=breed.breed)
              .mutate(mutate_function=mutate.mutate,
                      rate=config.config["mutation"]["mutation rate"],
                      elitist=config.config["mutation"]["elitist"])
@@ -42,7 +34,7 @@ logging = config.config["logging"]
 if logging:
     logging_folder = "img_out/full_log/" + str(datetime.datetime.now())[:19].replace(":", ".")
     os.mkdir(logging_folder)
-    shutil.copyfile(config.filepath, logging_folder + "config.json")
+    shutil.copyfile(config.filepath, logging_folder +"/"+ "config.json")
 
 for i in range(config.config["generations"]):
     population = population.evolve(evolution)
@@ -51,7 +43,7 @@ for i in range(config.config["generations"]):
     if logging:
         if (i + 1) % logging == 0:
             image = fitness.draw(population.current_best.chromosome)
-            image.save(logging_folder + str(i) + ".png")
+            image.save(logging_folder + "/" + str(i) + ".png")
 
 image = fitness.draw(population.current_best.chromosome)
 image.save("img_out/previous best.png")
