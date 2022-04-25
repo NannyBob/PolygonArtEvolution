@@ -2,11 +2,15 @@ import config
 import create
 import random
 
+import fitness
 
-def mutate(solution, rate):
+
+def mutate(solution):
     mutation_probs = config.config["mutation"]
+    if random.random() > mutation_probs["mutation rate"]:
+        return solution
     if random.random() < mutation_probs["move point"]:
-        mutate_point_gaussian(solution, rate)
+        mutate_point_gaussian(solution)
     if random.random() < mutation_probs["change colour"]:
         mutate_colour_gaussian(solution)
     if random.random() < mutation_probs["add polygon"]:
@@ -28,10 +32,10 @@ def mutate_colour_gaussian(solution):
     return solution
 
 
-def mutate_point_gaussian(solution, indpb):
+def mutate_point_gaussian(solution):
     polygon = random.choice(solution)
     for i in range(len(polygon[1:])):
-        polygon[i + 1] = single_point_gaussian(polygon[i + 1], indpb)
+        polygon[i + 1] = single_point_gaussian(polygon[i + 1], 10)
     return solution
 
 
@@ -49,27 +53,28 @@ def mutate_remove_polygon(solution):
 
 def mutate_add_point(solution):
     polygon = random.choice(solution)
-    if len(solution) + 1 < config.config["max points"]:
-        solution.append(create.random_point())
+    if len(polygon) - 1 < config.config["max points"]:
+        centroid = fitness.find_centroid(polygon)
+        solution.append(single_point_gaussian(centroid, 40))
     return solution
 
 
 def mutate_remove_point(solution):
     polygon = random.choice(solution)
-    if len(solution) + 1 < config.config["min points"]:
+    if len(polygon) -1 > config.config["min points"]:
         solution.pop(random.randint(config.config["min points"], len(polygon) - 1))
     return solution
 
 
-def single_point_gaussian(point, indpb):
+def single_point_gaussian(point, move_range):
     x = point[0]
     y = point[1]
-    if random.random() < indpb:
-        x += random.gauss(0, 10)
-        x = max(0, min(int(x), 200))
-    if random.random() < indpb:
-        y += random.gauss(0, 10)
-        y = max(0, min(int(y), 200))
+    # if random.random() < indpb:
+    x += random.gauss(0, move_range)
+    x = max(0, min(int(x), 200))
+    # if random.random() < indpb:
+    y += random.gauss(0, move_range)
+    y = max(0, min(int(y), 200))
     return (x, y)
 
 
