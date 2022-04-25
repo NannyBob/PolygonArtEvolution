@@ -26,10 +26,8 @@ def evaluate(solution):
 
 def point_order(polygon):
     points = polygon[1:]
-    x = [p[0] for p in points]
-    y = [p[1] for p in points]
     global centroid
-    centroid = (sum(x) / len(points), sum(y) / len(points))
+    centroid = find_centroid(polygon)
     points = sorted(points, key=sort_func)
     return points
 
@@ -38,3 +36,9 @@ def sort_func(point):
     x = centroid[0] - point[0]
     y = centroid[1] - point[1]
     return atan2(x, y)
+
+def find_centroid(polygon):
+    points = polygon[1:]
+    x = [p[0] for p in points]
+    y = [p[1] for p in points]
+    return sum(x) / len(points), sum(y) / len(points)
