@@ -1,29 +1,37 @@
 {
   "generations": 5000,
-  "population size": 10,
-  "logging": 0,
+  "population size": 100,
+  "logging": {
+    "interval": 50,
+    "log": true,
+    "log worst fitness": true,
+    "log no of polygons": true,
+    "pictures": false
+  },
   "progress": false,
   "starting polygons": 25,
-  "max polygons": 50,
-  "min polygons": 1,
+  "max polygons": 100,
+  "min polygons": 8,
   "max points": 6,
   "min points": 3,
   "survival rate": 0.5,
+  "concurrent workers": 8,
   "selection": {
     "tournament size": 5
   },
   "breed": {
-    "combine": 1,
+    "combine pairs": 1,
+    "combine random": 0,
     "crossover": 0
   },
   "mutation": {
+    "mutation rate": 0.75,
     "elitist": true,
-    "mutation rate": 0.5,
     "change colour": 0.8,
     "move point": 0.8,
-    "add polygon": 0.1,
+    "add polygon": 0.3,
     "remove polygon": 0.1,
-    "add point": 0.5,
-    "remove point": 0.5
+    "add point": 0.2,
+    "remove point": 0.1
   }
 }
