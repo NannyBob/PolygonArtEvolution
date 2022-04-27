@@ -4,7 +4,7 @@ import config
 
 
 def random_colour():
-    return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    return (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
 
 
 def random_point():

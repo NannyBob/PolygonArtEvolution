@@ -23,7 +23,6 @@ def evaluate(solution):
     return (MAX - count) / MAX
 
 
-
 def point_order(polygon):
     points = polygon[1:]
     global centroid
@@ -36,6 +35,7 @@ def sort_func(point):
     x = centroid[0] - point[0]
     y = centroid[1] - point[1]
     return atan2(x, y)
+
 
 def find_centroid(polygon):
     points = polygon[1:]
