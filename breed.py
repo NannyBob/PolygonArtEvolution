@@ -5,12 +5,12 @@ import config
 
 def breed(*parents):
     breed_dict = config.config["breed"]
-    if breed_dict["combine pairs"]:
+    total = breed_dict["combine pairs"] + breed_dict["combine random"]
+    rnd = random.random() * total
+    if breed_dict["combine pairs"] >= rnd:
         return combine_pairs(*parents)
-    elif breed_dict["combine random"]:
+    else:
         return combine_random(*parents)
-    elif breed_dict["crossover"]:
-        return crossover(*parents)
 
 
 def combine_pairs(*parents):
@@ -24,12 +24,10 @@ def combine_pairs(*parents):
     if diff > 0:
         for polygon in parents[0][len1:len0 - 1]:
             if random.random() < 0.5:
-                print("fixed1")
                 to_return.append(polygon)
     elif diff < 0:
         for polygon in parents[1][len0:len1 - 1]:
             if random.random() < 0.5:
-                print("fixed2")
                 to_return.append(polygon)
 
     return to_return
@@ -40,7 +38,7 @@ def combine_random(*parents):
     for parent in parents:
         for polygon in parent:
             combined.append(polygon)
-    to_return = random.sample(combined, 2)
+    to_return = random.sample(combined, int(len(combined)/2))
     return to_return
 
 
@@ -59,7 +57,7 @@ def check_equal(lst):
 
 def combine_pairs_original(*parents):
     # creates offspring by combining the polygons from the two parents, picks randomly between the polygons for each
-    # pair of polygons however, if one has few than the other, this results in the offspring having the fewer amount.
+    # pair of polygons however, if one has fewer than the other, this results in the offspring having the fewer amount.
     # this gradually decreases the number of polygons throughout the generations
     # lengths = [len(p) for p in parents]
     # if check_equal(lengths):';[
