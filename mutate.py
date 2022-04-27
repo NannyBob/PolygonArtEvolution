@@ -17,7 +17,7 @@ def mutate(solution):
         mutate_colour_gaussian(solution)
     if random.random() < mutation_probs["add polygon"]:
         mutate_add_similar_polygon(solution)
-        #mutate_add_polygon(solution)
+        # mutate_add_polygon(solution)
     if random.random() < mutation_probs["remove polygon"]:
         mutate_remove_polygon(solution)
     if random.random() < mutation_probs["add point"]:
@@ -49,9 +49,12 @@ def mutate_add_similar_polygon(solution):
     if len(solution) < config.config["max polygons"]:
         polygon = random.choice(solution)
         new_polygon = deepcopy(polygon)
-        new_colour = single_colour_gaussian(polygon[0], 10)
-        #with low alpha channel
-        new_adjusted_colour = (new_colour[0],new_colour[1],new_colour[2],10)
+        if random.random() < 0.1:
+            new_colour = create.random_colour()
+        else:
+            new_colour = single_colour_gaussian(polygon[0], 10)
+        # with low alpha channel
+        new_adjusted_colour = (new_colour[0], new_colour[1], new_colour[2], 10)
         new_polygon[0] = new_adjusted_colour
 
         for count, point in enumerate(new_polygon[1:]):
