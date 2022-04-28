@@ -1,15 +1,15 @@
 {
-  "generations": 5000,
+  "generations": 500,
   "population size": 100,
   "logging": {
     "interval": 50,
-    "log": true,
+    "log": false,
     "log worst fitness": true,
     "log no of polygons": true,
-    "pictures": false
+    "interval pictures": false,
+    "end pictures": true
   },
-  "progress": false,
-  "starting polygons": 25,
+  "starting polygons": 50,
   "max polygons": 100,
   "min polygons": 8,
   "max points": 6,
@@ -33,5 +33,10 @@
     "remove polygon": 0.1,
     "add point": 0.2,
     "remove point": 0.1
+  },
+  "meta": {
+    "population max": 200,
+    "population min": 50
+
   }
 }

@@ -9,8 +9,6 @@ import fitness
 
 def mutate(solution):
     mutation_probs = config.config["mutation"]
-    if random.random() > mutation_probs["mutation rate"]:
-        return solution
     if random.random() < mutation_probs["move point"]:
         mutate_point_gaussian(solution)
     if random.random() < mutation_probs["change colour"]:
@@ -28,7 +26,7 @@ def mutate(solution):
     return solution
 
 
-# Maybe mutate colour and transparency seperately
+# Maybe mutate colour and transparency separately
 def mutate_colour_gaussian(solution):
     polygon = random.choice(solution)
     polygon[0] = single_colour_gaussian(polygon[0], 10)

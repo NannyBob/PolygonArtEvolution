@@ -1,86 +1,99 @@
-# Task Description: https://ncl.instructure.com/courses/39977/pages/task-description-for-biocomputing?module_item_id=2232026
-# Slides: http://homepages.cs.ncl.ac.uk/pawel.widera/2034/evolution/slides/art.html#/
-import os
-import shutil
-import matplotlib
-import matplotlib.pyplot as plt
-from multiprocess.pool import Pool
+import random
+
+import base
+import breed
+import select
 
 from evol import Population, Evolution
-import datetime
-import random
+
+# so an individual is made up of [pop size, mut rate, survival rate, start polygons]
+import config
 import create
 import fitness
 import mutate
-import config
-import select
-import breed
 
-random.seed(1)
 
-population = Population.generate(create.initialize, fitness.evaluate,
-                                 size=config.config["population size"],
+# need to sort out starting polygons
+def evaluate(solution):
+    population = Population.generate(create.random_solution, fitness.evaluate,
+                                     size=solution[0],
+                                     maximize=True)
+
+    evolution = (Evolution().survive(fraction=solution[2])
+                 .breed(parent_picker=select.select,
+                        combiner=breed.breed)
+                 .mutate(mutate_function=mutate.mutate, probability=solution[1])
+                 .evaluate(lazy=True))
+
+    return base.evolve(population, evolution, 1)
+
+
+def rand_individual():
+    configfile = config.config
+    return [mutate_population_size(configfile["population size"]),
+            mutate_mutation_rate(configfile["mutation"]["mutation rate"]),
+            mutate_survival_rate(configfile["survival rate"]),
+            mutate_starting_polygons(configfile["starting polygons"])]
+
+
+def mutate_int_gaussian(value, sigma, top, bottom):
+    value += random.gauss(0, sigma)
+    value = max(bottom, min(int(value), top))
+    return value
+
+
+def mutate_population_size(value):
+    return mutate_int_gaussian(value, 5, config.config["meta"]["population max"],
+                               config.config["meta"]["population min"])
+
+
+def mutate_starting_polygons(value):
+    return mutate_int_gaussian(value, 5, config.config["max polygons"], config.config["min polygons"])
+
+
+def mutate_mutation_rate(value):
+    value += random.gauss(0, 0.1)
+    return max(0.0, min(value, 1.0))
+
+
+def mutate_survival_rate(value):
+    value += random.gauss(0, 0.1)
+    return max(0.2, min(value, 0.8))
+
+
+def mutate_solution(solution):
+    rand = random.random()
+    if rand <= 0.25:
+        solution[0] = mutate_population_size(solution[0])
+    elif rand <= 0.5:
+        solution[1] = mutate_mutation_rate(solution[1])
+    elif rand <= 0.75:
+        solution[2] = mutate_survival_rate(solution[2])
+    else:
+        solution[3] = mutate_starting_polygons(solution[3])
+    return solution
+
+
+def crossover(*parents):
+    child = []
+    # how babies are made
+    for i in range(4):
+        if random.random() < 0.5:
+            child.append(parents[0][i])
+        else:
+            child.append(parents[1][i])
+    return child
+
+
+population = Population.generate(rand_individual,
+                                 evaluate,
+                                 size=50,
                                  maximize=True)
 
-evolution = (Evolution().survive(fraction=config.config["survival rate"])
-             .breed(parent_picker=select.select,
-                    combiner=breed.breed)
-             .mutate(mutate_function=mutate.mutate,
-                     elitist=config.config["mutation"]["elitist"])
-             .evaluate(lazy=True))
+evolution = Evolution().survive(fraction=0.5) \
+    .breed(parent_picker=select.select, combiner=crossover) \
+    .mutate(mutate_function=mutate_solution).evaluate(lazy=True)
 
-logging = config.config["logging"]
-if logging["log"]:
-    best_fitnesses = []
-    polygon_count = []
-    worst_fitnesses = []
-    x = []
-    logging_folder = "img_out/full_log/" + str(datetime.datetime.now())[:19].replace(":", ".")
-    os.mkdir(logging_folder)
-    shutil.copyfile(config.filepath, logging_folder + "/" + "config.json")
-
-for i in range(config.config["generations"]):
+for i in range(20):
     population = population.evolve(evolution)
-    print("i =", i, " best =", population.current_best.fitness,
-          " worst =", population.current_worst.fitness)
-    if logging["log"]:
-        if (i + 1) % logging["interval"] == 0:
-            best_fitnesses.append(population.current_best.fitness)
-            worst_fitnesses.append(population.current_worst.fitness)
-            polygon_count.append(len(population.current_best.chromosome))
-            x.append(i + 1)
-            if logging["pictures"]:
-                image = fitness.draw(population.current_best.chromosome)
-                image.save(logging_folder + "/" + str(i + 1) + ".png")
-
-image = fitness.draw(population.current_best.chromosome)
-image.save("img_out/previous best.png")
-image = fitness.draw(population.current_worst.chromosome)
-image.save("img_out/previous worst.png")
-
-if logging["log"]:
-    # plotting fitness
-    fig, ax1 = plt.subplots()
-    ax1.set_xlabel('Generations')
-    ax1.set_ylabel('Fitness')
-    ax1.plot(x, best_fitnesses, color='green', label="best fitnesses")
-    ax1.tick_params(axis='y', labelcolor='green')
-
-    # plotting no of polygons
-    if logging["log no of polygons"]:
-        ax2 = ax1.twinx()
-        ax2.tick_params(axis='y', labelcolor='blue')
-        ax2.set_ylabel('Polygon Count', color='blue')
-        ax2.plot(x, polygon_count, color='blue')
-
-    if logging["log worst fitness"]:
-        ax1.plot(x, worst_fitnesses, color='red', label="worst fitnesses")
-    ax1.legend()
-    plt.savefig(logging_folder + "/" + "graph.png")
-
-if config.config["progress"]:
-    progress_folder = "img_out/progress/" + str(datetime.datetime.now())[:19].replace(":", ".") + "-" + str(
-        config.config["generations"]) + "/"
-    os.mkdir(progress_folder)
-    image.save(progress_folder + "image.png")
-    shutil.copyfile(config.filepath, progress_folder + "config.json")
+    print(population.current_best.fitness)
