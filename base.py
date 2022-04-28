@@ -18,8 +18,7 @@ import breed
 
 
 # the bulk of this is logging
-def evolve(population, evolution, seed):
-    random.seed(seed)
+def evolve(population, evolution):
     logging = config.config["logging"]
     if logging["log"]:
         best_fitnesses = []

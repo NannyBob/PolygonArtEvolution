@@ -1,4 +1,8 @@
+import datetime
+import os
 import random
+
+from matplotlib import pyplot as plt
 
 import base
 import breed
@@ -25,7 +29,7 @@ def evaluate(solution):
                  .mutate(mutate_function=mutate.mutate, probability=solution[1])
                  .evaluate(lazy=True))
 
-    return base.evolve(population, evolution, 1)
+    return base.evolve(population, evolution)
 
 
 def rand_individual():
@@ -87,13 +91,53 @@ def crossover(*parents):
 
 population = Population.generate(rand_individual,
                                  evaluate,
-                                 size=50,
+                                 size=500,
                                  maximize=True)
 
 evolution = Evolution().survive(fraction=0.5) \
     .breed(parent_picker=select.select, combiner=crossover) \
     .mutate(mutate_function=mutate_solution).evaluate(lazy=True)
 
-for i in range(20):
+best_of = []
+for i in range(500):
     population = population.evolve(evolution)
-    print(population.current_best.fitness)
+    best_of.append(population.current_best)
+    print(population.current_best.chromosome)
+
+folder = "img_out/full_log/" + str(datetime.datetime.now())[:19].replace(":", ".") + "/"
+os.mkdir(folder)
+x = [i for i in range(500)]
+fig, ax1 = plt.subplots()
+ax1.set_xlabel('Generations')
+ax1.set_ylabel('Fitness')
+ax1.plot(x, [i.fitness for i in best_of], color='red')
+plt.savefig(folder + "fitness.png")
+
+fig, ax1 = plt.subplots()
+ax1.set_xlabel('Generations')
+ax1.set_ylabel('Mutation Rate')
+ax1.plot(x, [i.chromosome[1] for i in best_of], color='orange')
+plt.savefig(folder + "mutation.png")
+
+fig, ax1 = plt.subplots()
+ax1.set_xlabel('Generations')
+ax1.set_ylabel('Survival Rate')
+ax1.plot(x, [i.chromosome[2] for i in best_of], color='orange')
+plt.savefig(folder + "survival.png")
+
+fig, ax1 = plt.subplots()
+ax1.set_xlabel('Generations')
+ax1.set_ylabel('Population Size')
+ax1.plot(x, [i.chromosome[0] for i in best_of], color='orange')
+plt.savefig(folder + "population size.png")
+
+fig, ax1 = plt.subplots()
+ax1.set_xlabel('Generations')
+ax1.set_xlabel('Starting Polygons')
+ax1.plot(x, [i.chromosome[3] for i in best_of], color='orange')
+plt.savefig(folder + "polygons.png")
+
+import json
+
+with open(folder + 'output.txt', 'w') as filehandle:
+    json.dump([i.chromosome for i in best_of], filehandle)
