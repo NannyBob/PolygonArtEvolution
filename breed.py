@@ -4,13 +4,7 @@ import config
 
 
 def breed(*parents):
-    breed_dict = config.config["breed"]
-    total = breed_dict["combine pairs"] + breed_dict["combine random"]
-    rnd = random.random() * total
-    if breed_dict["combine pairs"] >= rnd:
-        return combine_pairs(*parents)
-    else:
-        return combine_random(*parents)
+    return combine_pairs(*parents)
 
 
 def combine_pairs(*parents):
@@ -38,7 +32,7 @@ def combine_random(*parents):
     for parent in parents:
         for polygon in parent:
             combined.append(polygon)
-    to_return = random.sample(combined, int(len(combined)/2))
+    to_return = random.sample(combined, int(len(combined) / 2))
     return to_return
 
 

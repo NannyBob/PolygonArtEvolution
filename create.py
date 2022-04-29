@@ -2,6 +2,8 @@ import random
 
 import config
 
+starting_polygons = config.config["starting polygons"]
+
 
 def random_colour():
     return (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
@@ -19,4 +21,5 @@ def random_polygon():
 
 
 def random_solution():
-    return [random_polygon() for i in range(config.config["starting polygons"])]
+    print(starting_polygons)
+    return [random_polygon() for i in range(starting_polygons)]

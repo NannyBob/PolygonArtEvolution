@@ -1,6 +1,8 @@
 import datetime
 import os
 import random
+import shutil
+import json
 
 from matplotlib import pyplot as plt
 
@@ -19,17 +21,18 @@ import mutate
 
 # need to sort out starting polygons
 def evaluate(solution):
-    population = Population.generate(create.random_solution, fitness.evaluate,
-                                     size=solution[0],
-                                     maximize=True)
+    create.starting_polygons = solution[3]
+    pop = Population.generate(create.random_solution, fitness.evaluate,
+                              size=solution[0],
+                              maximize=True)
 
-    evolution = (Evolution().survive(fraction=solution[2])
-                 .breed(parent_picker=select.select,
-                        combiner=breed.breed)
-                 .mutate(mutate_function=mutate.mutate, probability=solution[1])
-                 .evaluate(lazy=True))
+    evol = (Evolution().survive(fraction=solution[2])
+            .breed(parent_picker=select.select,
+                   combiner=breed.breed)
+            .mutate(mutate_function=mutate.mutate, probability=solution[1])
+            .evaluate(lazy=True))
 
-    return base.evolve(population, evolution)
+    return base.evolve(pop, evol)
 
 
 def rand_individual():
@@ -47,8 +50,8 @@ def mutate_int_gaussian(value, sigma, top, bottom):
 
 
 def mutate_population_size(value):
-    return mutate_int_gaussian(value, 5, config.config["meta"]["population max"],
-                               config.config["meta"]["population min"])
+    return mutate_int_gaussian(value, 5, config.config["population max"],
+                               config.config["population min"])
 
 
 def mutate_starting_polygons(value):
@@ -91,22 +94,22 @@ def crossover(*parents):
 
 population = Population.generate(rand_individual,
                                  evaluate,
-                                 size=500,
+                                 size=config.config["meta"]["population size"],
                                  maximize=True)
 
-evolution = Evolution().survive(fraction=0.5) \
+evolution = Evolution().survive(fraction=config.config["meta"]["survival rate"]) \
     .breed(parent_picker=select.select, combiner=crossover) \
     .mutate(mutate_function=mutate_solution).evaluate(lazy=True)
 
 best_of = []
-for i in range(500):
+for i in range(config.config["meta"]["generations"]):
     population = population.evolve(evolution)
     best_of.append(population.current_best)
     print(population.current_best.chromosome)
 
 folder = "img_out/full_log/" + str(datetime.datetime.now())[:19].replace(":", ".") + "/"
 os.mkdir(folder)
-x = [i for i in range(500)]
+x = [i for i in range(config.config["meta"]["generations"])]
 fig, ax1 = plt.subplots()
 ax1.set_xlabel('Generations')
 ax1.set_ylabel('Fitness')
@@ -137,7 +140,6 @@ ax1.set_xlabel('Starting Polygons')
 ax1.plot(x, [i.chromosome[3] for i in best_of], color='orange')
 plt.savefig(folder + "polygons.png")
 
-import json
-
 with open(folder + 'output.txt', 'w') as filehandle:
     json.dump([i.chromosome for i in best_of], filehandle)
+shutil.copyfile(config.filepath, folder + "config.json")

@@ -1,6 +1,8 @@
 {
   "generations": 500,
   "population size": 100,
+  "population max": 200,
+  "population min": 50,
   "logging": {
     "interval": 50,
     "log": false,
@@ -35,8 +37,8 @@
     "remove point": 0.1
   },
   "meta": {
-    "population max": 200,
-    "population min": 50
-
+    "population size": 500,
+    "survival rate": 5,
+    "generations": 500
   }
 }
