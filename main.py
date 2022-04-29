@@ -18,9 +18,10 @@ import create
 import fitness
 import mutate
 
-
+seed = 0
 # need to sort out starting polygons
 def evaluate(solution):
+    random.seed(seed)
     create.starting_polygons = solution[3]
     pop = Population.generate(create.random_solution, fitness.evaluate,
                               size=solution[0],
@@ -103,6 +104,7 @@ evolution = Evolution().survive(fraction=config.config["meta"]["survival rate"])
 
 best_of = []
 for i in range(config.config["meta"]["generations"]):
+    seed = i
     population = population.evolve(evolution)
     best_of.append(population.current_best)
     print(population.current_best.chromosome)
