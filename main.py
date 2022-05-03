@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import os
 import random
 import shutil
@@ -18,10 +18,13 @@ import create
 import fitness
 import mutate
 
-seed = 0
+seed = int(round(datetime.now().timestamp()))
+
+
 # need to sort out starting polygons
 def evaluate(solution):
     random.seed(seed)
+    print(solution)
     create.starting_polygons = solution[3]
     pop = Population.generate(create.random_solution, fitness.evaluate,
                               size=solution[0],
@@ -32,8 +35,11 @@ def evaluate(solution):
                    combiner=breed.breed)
             .mutate(mutate_function=mutate.mutate, probability=solution[1])
             .evaluate(lazy=True))
+    fit = base.evolve(pop, evol)
 
-    return base.evolve(pop, evol)
+    # to maintain randomness in all other sections of the meta-evolution
+    random.seed(int(round(datetime.now().timestamp())))
+    return fit
 
 
 def rand_individual():
@@ -100,16 +106,17 @@ population = Population.generate(rand_individual,
 
 evolution = Evolution().survive(fraction=config.config["meta"]["survival rate"]) \
     .breed(parent_picker=select.select, combiner=crossover) \
-    .mutate(mutate_function=mutate_solution).evaluate(lazy=True)
+    .mutate(mutate_function=mutate_solution, probability=config.config["meta"]["mutation rate"]).evaluate(lazy=True)
 
 best_of = []
 for i in range(config.config["meta"]["generations"]):
     seed = i
+    print(i)
     population = population.evolve(evolution)
     best_of.append(population.current_best)
     print(population.current_best.chromosome)
 
-folder = "img_out/full_log/" + str(datetime.datetime.now())[:19].replace(":", ".") + "/"
+folder = "img_out/full_log/" + str(datetime.now())[:19].replace(":", ".") + "/"
 os.mkdir(folder)
 x = [i for i in range(config.config["meta"]["generations"])]
 fig, ax1 = plt.subplots()

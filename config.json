@@ -1,5 +1,5 @@
 {
-  "generations": 500,
+  "generations": 200,
   "population size": 100,
   "population max": 200,
   "population min": 50,
@@ -37,8 +37,9 @@
     "remove point": 0.1
   },
   "meta": {
-    "population size": 500,
-    "survival rate": 5,
-    "generations": 500
+    "population size": 20,
+    "survival rate": 0.5,
+    "generations": 30,
+    "mutation rate": 0.3
   }
 }

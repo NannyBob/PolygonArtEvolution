@@ -21,5 +21,4 @@ def random_polygon():
 
 
 def random_solution():
-    print(starting_polygons)
     return [random_polygon() for i in range(starting_polygons)]
