@@ -4,8 +4,8 @@
   "population max": 200,
   "population min": 50,
   "logging": {
-    "interval": 50,
-    "log": false,
+    "interval": 10,
+    "log": true,
     "log worst fitness": true,
     "log no of polygons": true,
     "interval pictures": false,
@@ -19,7 +19,7 @@
   "survival rate": 0.5,
   "concurrent workers": 8,
   "selection": {
-    "tournament size": 5
+    "tournament size": 0
   },
   "breed": {
     "combine pairs": 1,
