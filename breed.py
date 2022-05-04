@@ -30,15 +30,16 @@ def combine_pairs(*parents):
 def arithmetic_crossover(*parents):
     child = []
     len0 = len(parents[0])
+    print(len0)
     len1 = len(parents[1])
     for i in range(min(len0, len1)):
         child.append(polygon_combine(parents[0][i], parents[1][i]))
     if len0 > len1:
-        for polygon in parents[0][len1 - 1:]:
+        for polygon in parents[0][len1:]:
             if random.random() > 0.5:
                 child.append(polygon)
     else:
-        for polygon in parents[1][len0 - 1:]:
+        for polygon in parents[1][len0:]:
             if random.random() > 0.5:
                 child.append(polygon)
     return child
@@ -55,11 +56,11 @@ def polygon_combine(a, b):
     for i in range(min(lena, lenb)):
         child.append(point_combine(a[i + 1], b[i + 1]))
     if lena > lenb:
-        for point in a[lenb:]:
+        for point in a[lenb+1:]:
             if random.random() > 0.5:
                 child.append(point)
     else:
-        for point in b[lena:]:
+        for point in b[lena+1:]:
             if random.random() > 0.5:
                 child.append(point)
     return child
