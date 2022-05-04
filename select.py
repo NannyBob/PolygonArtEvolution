@@ -15,10 +15,10 @@ def select(population):
 
 def tournament(population):
     tournament_size = config.config["selection"]["tournament size"]
-    if tournament_size > len(population):
-        tournament_size = len(population)
     chosen = []
     for i in range(2):
+        if tournament_size > len(population):
+            tournament_size = len(population)
         candidates = random.sample(population, tournament_size)
         winner = max(candidates, key=attrgetter("fitness"))  # pick by fitness
         chosen.append(deepcopy(winner))  # append a copy, not a reference
@@ -29,7 +29,8 @@ def tournament(population):
 
 
 def roulette(population):
-    # after this chooses the first individual, it is removed from the population temporarily, so as not to be chosen again
+    # after this chooses the first individual, it is removed from the population temporarily, so as not to be chosen
+    # again
     chosen = []
     current = 0
     total = sum(indiv.fitness for indiv in population)
@@ -39,6 +40,7 @@ def roulette(population):
         if current > pick:
             chosen.append(individual)
             population.remove(individual)
+            break
 
     total = sum(indiv.fitness for indiv in population)
     pick = random.uniform(0, total)
@@ -46,6 +48,7 @@ def roulette(population):
         current += individual.fitness
         if current > pick:
             chosen.append(individual)
+            break
 
     population.append(chosen[0])
     return chosen
