@@ -1,18 +1,18 @@
 {
-  "generations": 100000,
+  "generations": 500,
   "population size": 100,
   "population max": 200,
   "population min": 50,
   "logging": {
-    "interval": 50,
-    "log": true,
-    "log worst fitness": false,
-    "log no of polygons": false,
+    "interval": 10,
+    "log": false,
+    "log worst fitness": true,
+    "log no of polygons": true,
     "interval pictures": true,
     "end pictures": true
   },
   "starting polygons": 50,
-  "max polygons": 300,
+  "max polygons": 100,
   "min polygons": 8,
   "max points": 6,
   "min points": 3,
@@ -27,7 +27,7 @@
     "crossover": 0
   },
   "mutation": {
-    "mutation rate": 0.01,
+    "mutation rate": 0.75,
     "elitist": true,
     "change colour": 0.8,
     "move point": 0.8,
@@ -41,8 +41,5 @@
     "survival rate": 0.5,
     "generations": 30,
     "mutation rate": 0.3
-  },
-  "comparison": {
-    "seeds": [45,46]
   }
 }

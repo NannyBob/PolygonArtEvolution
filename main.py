@@ -17,6 +17,7 @@ import config
 import create
 import fitness
 import mutate
+import binary
 
 seed = int(round(datetime.now().timestamp()))
 
@@ -25,15 +26,28 @@ seed = int(round(datetime.now().timestamp()))
 def evaluate(solution):
     random.seed(seed)
     print(solution)
-    create.starting_polygons = solution[3]
-    pop = Population.generate(create.random_solution, fitness.evaluate,
+    # create.starting_polygons = solution[3]
+    # pop = Population.generate(create.random_solution, fitness.evaluate,
+    # size=solution[0],
+    # maximize=True)
+
+    # evol = (Evolution().survive(fraction=solution[2])
+    #        .breed(parent_picker=select.select,
+    #               combiner=breed.breed)
+    #        .mutate(mutate_function=mutate.mutate, probability=solution[1])
+    #        .evaluate(lazy=True))
+    #
+
+    binary.starting_polygons = solution[3]
+    binary.mutation_rate = solution[1]
+    pop = Population.generate(binary.create, binary.evaluate,
                               size=solution[0],
                               maximize=True)
 
     evol = (Evolution().survive(fraction=solution[2])
             .breed(parent_picker=select.select,
-                   combiner=breed.breed)
-            .mutate(mutate_function=mutate.mutate, probability=solution[1])
+                   combiner=binary.crossover)
+            .mutate(mutate_function=binary.mutate, probability=1)
             .evaluate(lazy=True))
     fit = base.evolve(pop, evol)
 
@@ -66,7 +80,7 @@ def mutate_starting_polygons(value):
 
 
 def mutate_mutation_rate(value):
-    value += random.gauss(0, 0.1)
+    value += random.gauss(0, 0.01)
     return max(0.0, min(value, 1.0))
 
 
@@ -105,7 +119,7 @@ population = Population.generate(rand_individual,
                                  maximize=True)
 
 evolution = Evolution().survive(fraction=config.config["meta"]["survival rate"]) \
-    .breed(parent_picker=select.select, combiner=crossover) \
+    .breed(parent_picker=select.tournament, combiner=crossover) \
     .mutate(mutate_function=mutate_solution, probability=config.config["meta"]["mutation rate"]).evaluate(lazy=True)
 
 best_of = []
@@ -118,7 +132,7 @@ for i in range(config.config["meta"]["generations"]):
 
 folder = "img_out/full_log/" + str(datetime.now())[:19].replace(":", ".") + "/"
 os.mkdir(folder)
-x = [i for i in range(config.config["meta"]["generations"])]
+x = [i + 1 for i in range(config.config["meta"]["generations"])]
 fig, ax1 = plt.subplots()
 ax1.set_xlabel('Generations')
 ax1.set_ylabel('Fitness')
@@ -150,5 +164,5 @@ ax1.plot(x, [i.chromosome[3] for i in best_of], color='orange')
 plt.savefig(folder + "polygons.png")
 
 with open(folder + 'output.txt', 'w') as filehandle:
-    json.dump([i.chromosome for i in best_of], filehandle)
+    json.dump([(i.chromosome, i.fitness) for i in best_of], filehandle)
 shutil.copyfile(config.filepath, folder + "config.json")

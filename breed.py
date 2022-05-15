@@ -4,7 +4,7 @@ import config
 
 
 def breed(*parents):
-    return arithmetic_crossover(*parents)
+    return combine_pairs(*parents)
 
 
 def combine_pairs(*parents):
@@ -30,7 +30,6 @@ def combine_pairs(*parents):
 def arithmetic_crossover(*parents):
     child = []
     len0 = len(parents[0])
-    print(len0)
     len1 = len(parents[1])
     for i in range(min(len0, len1)):
         child.append(polygon_combine(parents[0][i], parents[1][i]))

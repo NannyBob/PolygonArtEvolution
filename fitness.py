@@ -18,6 +18,7 @@ def draw(solution):
 def evaluate(solution):
     image = draw(solution)
     diff = ImageChops.difference(image, TARGET)
+    #hist = diff.histogram()
     hist = diff.convert("L").histogram()
     count = sum(i * n for i, n in enumerate(hist))
     return (MAX - count) / MAX
@@ -41,4 +42,6 @@ def find_centroid(polygon):
     points = polygon[1:]
     x = [p[0] for p in points]
     y = [p[1] for p in points]
+    if not len(points):
+        print(polygon)
     return sum(x) / len(points), sum(y) / len(points)

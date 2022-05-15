@@ -9,6 +9,8 @@ from multiprocess.pool import Pool
 from evol import Population, Evolution
 import datetime
 import random
+
+import binary
 import create
 import fitness
 import mutate
@@ -31,7 +33,7 @@ def evolve(population, evolution):
 
     for i in range(config.config["generations"]):
         population = population.evolve(evolution)
-        #print("i =", i, " best =", population.current_best.fitness,
+        # print("i =", i, " best =", population.current_best.fitness,
         #      " worst =", population.current_worst.fitness)
         if logging["log"]:
             if (i + 1) % logging["interval"] == 0:
@@ -70,3 +72,15 @@ def evolve(population, evolution):
             image.save(logging_folder + "/worst.png")
 
     return population.current_best.fitness
+
+
+create.starting_polygons = 53
+pop = Population.generate(create.random_solution, fitness.evaluate,
+                          size=104,
+                          maximize=True)
+evolution = (Evolution().survive(fraction=0.25125070269958294)
+             .breed(parent_picker=select.tournament,
+                    combiner=breed.combine_pairs)
+             .mutate(mutate_function=mutate.mutate, probability=0.9447429119639668)
+             .evaluate(lazy=True))
+evolve(pop, evolution)
